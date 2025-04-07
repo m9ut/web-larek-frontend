@@ -1,4 +1,4 @@
-import {Component} from "./base/component";
+import { Component } from './base/component';
 import { bem, ensureElement } from '../utils/utils';
 
 interface ICardActions {
@@ -24,7 +24,11 @@ export class Card<T> extends Component<ICard<T>> {
 	protected _category: HTMLButtonElement;
 	protected _price: HTMLElement;
 
-	constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
+	constructor(
+		protected blockName: string,
+		container: HTMLElement,
+		actions?: ICardActions
+	) {
 		super(container);
 
 		this._title = ensureElement<HTMLElement>(`.${blockName}__title`, container);
@@ -34,7 +38,6 @@ export class Card<T> extends Component<ICard<T>> {
 		this._price = ensureElement<HTMLElement>(`.${blockName}__price`, container);
 		this._category = container.querySelector(`.${blockName}__category`);
 
-
 		if (actions.onClick) {
 			if (this._button) {
 				this._button.addEventListener('click', actions.onClick);
@@ -42,37 +45,47 @@ export class Card<T> extends Component<ICard<T>> {
 				container.addEventListener('click', actions.onClick);
 			}
 		}
-
 	}
 
 	set price(price: number | null) {
 		if (price) {
-			const value = price >= 10000 ? new Intl.NumberFormat("ru").format(price) : price
+			const value =
+				price >= 10000 ? new Intl.NumberFormat('ru').format(price) : price;
 			this.setText(this._price, `${value} синапсов`);
 		} else {
-			this.setText(this._price, 'бесценно')
+			this.setText(this._price, 'бесценно');
 			this.setDisabled(this._button, true);
 		}
 	}
 
 	set category(value: string) {
 		this.setText(this._category, value);
-		this._category.className = this._category.className.split(' ')[0]
+		this._category.className = this._category.className.split(' ')[0];
 		switch (value) {
 			case 'другое':
-				this._category.classList.add(bem(this.blockName, 'category', 'other').name);
+				this._category.classList.add(
+					bem(this.blockName, 'category', 'other').name
+				);
 				break;
 			case 'софт-скил':
-				this._category.classList.add(bem(this.blockName, 'category', 'soft').name);
+				this._category.classList.add(
+					bem(this.blockName, 'category', 'soft').name
+				);
 				break;
 			case 'хард-скил':
-				this._category.classList.add(bem(this.blockName, 'category', 'hard').name);
+				this._category.classList.add(
+					bem(this.blockName, 'category', 'hard').name
+				);
 				break;
 			case 'дополнительное':
-				this._category.classList.add(bem(this.blockName, 'category', 'additional').name);
+				this._category.classList.add(
+					bem(this.blockName, 'category', 'additional').name
+				);
 				break;
 			case 'кнопка':
-				this._category.classList.add(bem(this.blockName, 'category', 'button').name);
+				this._category.classList.add(
+					bem(this.blockName, 'category', 'button').name
+				);
 				break;
 		}
 	}
@@ -86,23 +99,22 @@ export class Card<T> extends Component<ICard<T>> {
 	}
 
 	set image(value: string) {
-		this.setImage(this._image, value, this.title)
+		this.setImage(this._image, value, this.title);
 	}
 
 	set description(value: string) {
-		this.setText(this._description, value)
+		this.setText(this._description, value);
 	}
 
 	set button(isAddOpiration: boolean) {
 		if (isAddOpiration) {
-			this.setText(this._button, 'В корзину')
+			this.setText(this._button, 'В корзину');
 		} else {
-			this.setText(this._button, 'Купить')
+			this.setText(this._button, 'Купить');
 		}
 	}
 
-	addButoonAction(actions?: ICardActions): void
-	{
+	addButoonAction(actions?: ICardActions): void {
 		this._button.addEventListener('click', actions.onClick);
 	}
 }
@@ -114,7 +126,11 @@ export class BasketCard extends Card<IBasketCard> {
 	protected _icon: HTMLElement;
 	protected _index: HTMLElement;
 
-	constructor(blockname: string, container: HTMLElement, actions?: ICardActions) {
+	constructor(
+		blockname: string,
+		container: HTMLElement,
+		actions?: ICardActions
+	) {
 		super(blockname, container, actions);
 		this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
 		this._icon = ensureElement<HTMLElement>(`.basket__item-delete`, container);
@@ -123,5 +139,4 @@ export class BasketCard extends Card<IBasketCard> {
 	set index(index: string) {
 		this.setText(this._index, index);
 	}
-
 }

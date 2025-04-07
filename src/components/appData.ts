@@ -1,6 +1,5 @@
-import { IProductItem, IOrder, IBasket, PaymentType } from '../types';
+import { IProductItem, IOrder, PaymentType } from '../types';
 import { Model } from './base/model';
-import { ICard } from "./card";
 
 export interface IAppState {
 	catalog: IProductItem[];
@@ -9,17 +8,16 @@ export interface IAppState {
 }
 
 export class AppState extends Model<IAppState> {
-	 _basket: string[] = [];
-	 catalog: IProductItem[];
-	 _order: IOrder = {
+	_basket: string[] = [];
+	catalog: IProductItem[];
+	_order: IOrder = {
 		phone: '',
 		address: '',
 		email: '',
 		payment: PaymentType.Online,
 		items: [],
-		total: 0
+		total: 0,
 	};
-
 
 	get basket(): string[] {
 		return this._basket;
@@ -46,21 +44,25 @@ export class AppState extends Model<IAppState> {
 	}
 
 	setCatalog(products: IProductItem[]) {
-		this.products = products
+		this.products = products;
 		this.emitChanges('cards:display', { catalog: this.catalog });
 	}
 
 	getBasketItems(): IProductItem[] {
-		return this.catalog
-			.filter(item => this.basket.includes(item.id));
+		return this.catalog.filter((item) => this.basket.includes(item.id));
 	}
 
 	getSum(): number {
-		const arrayOfItems = this.products.filter(item => this.basket.includes(item.id))
-		return arrayOfItems.reduce((sum: number, item: IProductItem) => sum + (item.price), 0);
+		const arrayOfItems = this.products.filter((item) =>
+			this.basket.includes(item.id)
+		);
+		return arrayOfItems.reduce(
+			(sum: number, item: IProductItem) => sum + item.price,
+			0
+		);
 	}
 
-	getSumOfItems(): number {
-		return this.basket.length
+	ccc(): number {
+		return this.basket.length;
 	}
 }

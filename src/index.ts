@@ -41,68 +41,72 @@ const basket = new Basket(cloneTemplate(basketTemplate), events);
 const orderAdress = new AddressForm(cloneTemplate(adressTemplate), events);
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events);
 
-
-api.getProductList()
+api
+	.getProductList()
 	.then(appData.setCatalog.bind(appData))
-	.catch(err => {
+	.catch((err) => {
 		console.error(err);
 	});
 
 events.on('cards:display', () => {
-	page.catalog = appData.products.map(item => {
+	page.catalog = appData.products.map((item) => {
 		const card = new Card('card', cloneTemplate(cardCatalogTemplate), {
 			onClick: () => {
-				events.emit('cards:show', item)
-			}
+				events.emit('cards:show', item);
+			},
 		});
 		return card.render({
 			category: item.category,
 			image: item.image,
 			price: item.price,
 			title: item.title,
-			description: item.description
+			description: item.description,
 		});
 	});
 });
 
-	events.on('cards:show', (item: IProductItem) => {
-		const card = new Card('card', cloneTemplate(cardPreviewTemplate), {
-			onClick: () => {
-				card.button = true;
-				card.addButoonAction({
-					onClick: () => {
-							events.emit('basket:open', item);
-					}
-				})
-				if (!appData.basket.includes(item.id)) {
-					events.emit('card:add', item);
-				}
-			}
-		})
-
-		if (!appData.basket.includes(item.id)) {
-			card.button = false;
-		} else {
+events.on('cards:show', (item: IProductItem) => {
+	const card = new Card('card', cloneTemplate(cardPreviewTemplate), {
+		onClick: () => {
+			card.button = true;
 			card.addButoonAction({
-				onClick: () => events.emit('basket:open', item)
-			})
-		}
+				onClick: () => {
+					events.emit('basket:open', item);
+				},
+			});
+			if (!appData.basket.includes(item.id)) {
+				events.emit('card:add', item);
+			}
+		},
+	});
 
-		modal.render({
-			content: card.render({
-				id: item.id,
-				category: item.category,
-				description: item.description,
-				image: item.image,
-				price: item.price,
-				title: item.title,
-			})
-		})
-	events.emit('modal:open', item)
-})
+	if (!appData.basket.includes(item.id)) {
+		card.button = false;
+	} else {
+		card.addButoonAction({
+			onClick: () => events.emit('basket:open', item),
+		});
+	}
 
-events.on('modal:open', () => { page.locked = true})
-events.on('modal:close', () => { page.locked = false})
+	modal.render({
+		content: card.render({
+			id: item.id,
+			category: item.category,
+			description: item.description,
+			image: item.image,
+			price: item.price,
+			title: item.title,
+		}),
+	});
+	events.emit('modal:open', item);
+});
+
+events.on('modal:open', () => {
+	page.locked = true;
+});
+events.on('modal:close', () => {
+	page.locked = false;
+});
 
 events.on('card:add', (item: IProductItem) => {
 	appData.basket.push(item.id);
@@ -112,21 +116,23 @@ events.on('card:add', (item: IProductItem) => {
 
 events.on('basket:open', () => {
 	modal.render({
-		content: basket.render()
-		
+		content: basket.render(),
 	});
 	basket.total = appData.getSum();
-	basket.items = appData.getBasketItems()
-		.map((item, i) => {
-			const cardBasket = new BasketCard('card', cloneTemplate(cardBasketTemplate), {
-				onClick: () => events.emit('card:delete', item)
-			});
-			cardBasket.index = ((i + 1).toString());
-			return cardBasket.render({
-				title: item.title,
-				price: item.price,
-			})
+	basket.items = appData.getBasketItems().map((item, i) => {
+		const cardBasket = new BasketCard(
+			'card',
+			cloneTemplate(cardBasketTemplate),
+			{
+				onClick: () => events.emit('card:delete', item),
+			}
+		);
+		cardBasket.index = (i + 1).toString();
+		return cardBasket.render({
+			title: item.title,
+			price: item.price,
 		});
+	});
 	if (appData.getSumOfItems() == 0) {
 		basket.setButtonDisabled(true);
 	} else {
@@ -136,11 +142,11 @@ events.on('basket:open', () => {
 
 events.on('card:delete', (item: IProductItem) => {
 	appData.basket = appData.basket.filter(
-		basketItem => basketItem !== item.id
+		(basketItem) => basketItem !== item.id
 	);
 	appData.order.items = appData.order.items.filter(
-		orderItem => orderItem !== item.id
-	)
+		(orderItem) => orderItem !== item.id
+	);
 	events.emit('basket:open');
 	page.counter = appData.getSumOfItems();
 });
@@ -150,48 +156,47 @@ events.on('order:open', () => {
 		content: orderAdress.render({
 			payment: PaymentType.Online,
 			valid: false,
-			errors: []
-		})
+			errors: [],
+		}),
 	});
 });
 
 events.on('contacts:open', (data: IAddressForm) => {
 	appData.order.address = data.address;
-	appData.order.payment = data.payment
+	appData.order.payment = data.payment;
 	modal.render({
 		content: contacts.render({
 			errors: [],
 			valid: false,
 			email: '',
-			phone: ''
-		})
+			phone: '',
+		}),
 	});
-})
+});
 
 events.on('order:submit', (data: IContactsForm) => {
 	appData.order.email = data.email;
 	appData.order.phone = data.phone;
 	appData.order.total = appData.getSum();
-	api.orderProducts(appData.order).then( (res: IOrderStatus) => {
-
+	api.orderProducts(appData.order).then((res: IOrderStatus) => {
 		appData.basket = [];
-		appData.order.items = []
-		console.log(appData)
-		page.counter = 0
+		appData.order.items = [];
+		console.log(appData);
+		page.counter = 0;
 
 		const success = new Success(cloneTemplate(successTemplate), {
 			onClick: () => {
 				modal.close();
-				events.emit('cards:display')
-			}
+				events.emit('cards:display');
+			},
 		});
 
 		modal.render({
 			content: success.render({
-				total: appData.order.total
-			})
+				total: appData.order.total,
+			}),
 		});
 
-		appData.order.total = 0
+		appData.order.total = 0;
 	});
-})
+});
