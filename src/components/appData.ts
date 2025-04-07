@@ -62,7 +62,7 @@ export class AppState extends Model<IAppState> {
 		);
 	}
 
-	ccc(): number {
+	getSumOfItems(): number {
 		return this.basket.length;
 	}
 }
