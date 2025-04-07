@@ -1,41 +1,34 @@
-export interface IAppState {
-	products: IProduct[];
-	basket: string[];
-	order: IOrder | null;
-	formErrors: FormErrors[];
-}
-
-export interface IProduct {
+export interface IProductItem {
 	id: string;
 	description: string;
 	image: string;
 	title: string;
 	category: string;
-	price: number | string;
+	price: number;
 }
 
-export interface IOrder {
-  paymentMethod: PaymentType;
-  email: string;
-  phoneNumber: string;
+export type IOrder = IAddressForm &
+	IContactsForm & {
+		total: number;
+		items: string[];
+	};
+
+export interface IContactsForm {
+	phone: string;
+	email: string;
+}
+
+export interface IAddressForm {
 	address: string;
-	totalPayment: number;
-	productsList: string[];
+	payment: PaymentType;
 }
 
-export interface IBasket {
-	title: string;
-	totalPrice: number;
-	products: IProduct[];
+export enum PaymentType {
+	Online = 'Онлайн',
+	OnDelivery = 'При получении',
 }
 
-export type PaymentType = 
-  'онлайн' | 
-  'при получении'
-
-  export type FormErrors = Partial<Record<keyof IOrder, string>>;
-
-  export interface IOrderStatus {
+export interface IOrderStatus {
 	status: string;
 	totalPrice: number;
 }
