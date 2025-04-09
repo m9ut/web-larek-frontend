@@ -43,10 +43,6 @@ export class Basket extends Component<IBasketView> {
 	}
 
 	setButtonDisabled(state: boolean) {
-		if (state) {
-			this.setDisabled(this._button, true);
-		} else {
-			this.setDisabled(this._button, false);
-		}
+		this.setDisabled(this._button, state);
 	}
 }

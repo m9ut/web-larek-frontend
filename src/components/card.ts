@@ -60,34 +60,15 @@ export class Card<T> extends Component<ICard<T>> {
 
 	set category(value: string) {
 		this.setText(this._category, value);
-		this._category.className = this._category.className.split(' ')[0];
-		switch (value) {
-			case 'другое':
-				this._category.classList.add(
-					bem(this.blockName, 'category', 'other').name
-				);
-				break;
-			case 'софт-скил':
-				this._category.classList.add(
-					bem(this.blockName, 'category', 'soft').name
-				);
-				break;
-			case 'хард-скил':
-				this._category.classList.add(
-					bem(this.blockName, 'category', 'hard').name
-				);
-				break;
-			case 'дополнительное':
-				this._category.classList.add(
-					bem(this.blockName, 'category', 'additional').name
-				);
-				break;
-			case 'кнопка':
-				this._category.classList.add(
-					bem(this.blockName, 'category', 'button').name
-				);
-				break;
-		}
+		this.toggleClass(this._category, `card__category_${this._categoryColor[value]}`, true)
+	}
+
+	protected _categoryColor = <Record<string, string>> { 
+		"софт-скил": "soft",
+		"другое": "other",
+		"дополнительное": "additional",
+		"кнопка": "button",
+		"хард-скил": "hard"
 	}
 
 	set id(value: string) {

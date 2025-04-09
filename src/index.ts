@@ -175,28 +175,34 @@ events.on('contacts:open', (data: IAddressForm) => {
 });
 
 events.on('order:submit', (data: IContactsForm) => {
-	appData.order.email = data.email;
-	appData.order.phone = data.phone;
-	appData.order.total = appData.getSum();
-	api.orderProducts(appData.order).then((res: IOrderStatus) => {
-		appData.basket = [];
-		appData.order.items = [];
-		console.log(appData);
-		page.counter = 0;
+    appData.order.email = data.email;
+    appData.order.phone = data.phone;
+    appData.order.total = appData.getSum();
 
-		const success = new Success(cloneTemplate(successTemplate), {
-			onClick: () => {
-				modal.close();
-				events.emit('cards:display');
-			},
-		});
+    api.orderProducts(appData.order)
+        .then((res: IOrderStatus) => {
+            appData.basket = [];
+            appData.order.items = [];
+            console.log(appData);
+            page.counter = 0;
 
-		modal.render({
-			content: success.render({
-				total: appData.order.total,
-			}),
-		});
+            const success = new Success(cloneTemplate(successTemplate), {
+                onClick: () => {
+                    modal.close();
+                    events.emit('cards:display');
+                },
+            });
 
-		appData.order.total = 0;
-	});
+            modal.render({
+                content: success.render({
+                    total: appData.order.total,
+                }),
+            });
+
+            appData.order.total = 0;
+        })
+        .catch((err) => {
+            console.error('Ошибка при отправке заказа:', err);
+            // Дополнительная обработка ошибки, если необходимо
+        });
 });

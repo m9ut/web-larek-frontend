@@ -35,13 +35,13 @@ export class AddressForm extends Form<IAddressForm> {
 				} else {
 					this._next.setAttribute('disabled', '');
 				}
-				if (this._card == tab) {
-					this._card.classList.add('button_alt-active');
-					this._cash.classList.remove('button_alt-active');
-				} else {
-					this._cash.classList.add('button_alt-active');
-					this._card.classList.remove('button_alt-active');
-				}
+				if (this._card === tab) {
+                    this.toggleClass(this._card, 'button_alt-active', true);
+                    this.toggleClass(this._cash, 'button_alt-active', false);
+                } else {
+                    this.toggleClass(this._cash, 'button_alt-active', true);
+                    this.toggleClass(this._card, 'button_alt-active', false); 
+                }
 			});
 		});
 
@@ -54,18 +54,21 @@ export class AddressForm extends Form<IAddressForm> {
 		});
 
 		this._next.addEventListener('click', () => {
-			const order: IAddressForm = {
-				address: this._address.value,
-				payment:
-					'button_alt-active' in this._card.classList.keys()
-						? PaymentType.Online
-						: PaymentType.OnDelivery,
-			};
-			events.emit('contacts:open', order);
-		});
-	}
+            const order: IAddressForm = {
+                address: this._address.value,
+                payment: this.isButtonActive(this._card)
+                    ? PaymentType.Online
+                    : PaymentType.OnDelivery,
+            };
+            events.emit('contacts:open', order);
+        });
+    }
 
-	checkAddres() {
-		return this._address.value != '' && this.isChoosen;
-	}
+    checkAddres() {
+        return this._address.value !== '' && this.isChoosen;
+    }
+	
+    private isButtonActive(button: HTMLButtonElement): boolean {
+        return button.classList.contains('button_alt-active');
+    }
 }
